@@ -1,0 +1,23 @@
+{% extends "liblab/MainBase.html" %}
+
+{% block title %}MAC Library - My Account{% endblock %}
+
+{% block pageName %}account detail{% endblock %}
+
+{% block About %}active{% endblock %}
+
+{% block content %}
+    <br/>
+    <a href="/"> Back to Homepage</a>
+    <hr/>
+    <p>The operation Hour of the library is:</p>
+    <ul>
+    {% for time in opMsg %}
+        <li>{{ time }}</li>
+    {% empty %}
+        <li>Sorry，no operation time found!</li>
+    {% endfor %}
+    </ul>
+    <p>{{ msg }}</p>
+
+{% endblock %}
