@@ -9,7 +9,7 @@ class User(models.Model):
     email = models.CharField("Email", max_length=100)
     CHOICES = (('F', 'Female',), ('M', 'Male',))
     gender = models.CharField("Gender", max_length=2, choices=CHOICES)
-    postalcode = models.CharField("Postal Code", max_length=7, default="N9B 3P4")
+    postalcode = models.CharField("Postal Code", max_length=7, null=True, blank=True)
 
 class Libuser(User):
     PROVINCE_CHOICES = (
@@ -18,26 +18,34 @@ class Libuser(User):
         ('ON', 'Ontario'),
         ('QC', 'Quebec'),
     )
-    address = models.CharField(max_length=100, null=True)
+    address = models.CharField(max_length=100, null=True, blank=True)
     city = models.CharField(max_length=20, default='Windsor')
     province = models.CharField(max_length=2, choices=PROVINCE_CHOICES, default='ON')
     phone = models.IntegerField(null=True)
 
+    def __str__(self):
+        return self.f_name + ' ' + self.l_name
+
+
 class Libitem(models.Model):
     TYPE_CHOICES = (
         ('Book', 'Book'),
-        ('DVD','DVD'),
+        ('DVD', 'DVD'),
         ('Other', 'Other'),
     )
     title = models.CharField(max_length=100)
     itemtype = models.CharField(max_length=6, choices=TYPE_CHOICES, default='Book')
-    checked_out=models.BooleanField(default=False)
-    user=models.ForeignKey(Libuser, default=None, null=True)
-    duedate=models.DateField(default=None, null=True)
+    checked_out = models.BooleanField(default=False)
+    user = models.ForeignKey(Libuser, default=None, null=True)
+    duedate = models.DateField(default=None, null=True)
     last_chkout = models.DateField(default=None, null=True)
     date_acquired = models.DateField(default=timezone.now)
-    pubyr = models.IntegerField()
-    CharField = models.IntegerField(default=0)
+    pubyr = models.IntegerField("Publish Year")
+    num_chkout = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.title + ' used by ' + self.user.__str__()
+
 
 class Book(Libitem):
     CATEGORY_CHOICES = (
@@ -49,10 +57,26 @@ class Book(Libitem):
         (6, 'Teen'),
         (7, 'Other'),
     )
-    author = models.CharField(max_length=100, blank=True)
+
+    author = models.CharField(max_length=100)
     category = models.IntegerField(choices=CATEGORY_CHOICES, default=1)
 
     def __str__(self):
         return self.title + ' by ' + self.author
 
 
+class Dvd(Libitem):
+    RATING_CHOICES = (
+        (1, 'G'),
+        (2, 'PG'),
+        (3, 'PG-13'),
+        (4, '14A'),
+        (5, 'R'),
+        (6, 'NR'),
+    )
+    maker = models.CharField(max_length=100, blank=True)
+    duration = models.IntegerField(blank=True)
+    rating = models.IntegerField(choices=RATING_CHOICES, default=1)
+
+    def __str__(self):
+        return self.title + ' by ' + self.maker
