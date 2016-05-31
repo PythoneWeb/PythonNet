@@ -13,11 +13,11 @@ users = Libuser.objects.all()
 print(users)
 
 print('List all Libusers whose first name is ‘Anne’:')
-anne = Libuser.objects.filter(f_name="Anne")
+anne = Libuser.objects.filter(first_name="Anne")
 print(anne)
 
 print('List all Books whose category is ‘Fiction’:')
-fiction = Book.objects.filter(category=1)
+fiction = Book.objects.filter(title=1)
 print(fiction)
 
 print('List all Books whose category is ‘Fiction’ and were published before 2005:')
@@ -45,19 +45,19 @@ chk_item = Libitem.objects.filter(checked_out=True)
 print(chk_item)
 
 print('List all Libitems checked out by Libuser with username ‘lisa’:')
-chk_lisa = Libitem.objects.filter(checked_out=True).filter(user__f_name__contains='Lisa')
+chk_lisa = Libitem.objects.filter(checked_out=True).filter(user__username='lisa')
 print(chk_lisa)
 
 print('Get the first name of the person who has checked out the Dvd ‘Funny Movie’:')
-name_fun = Libuser.objects.filter(libitem__title='Funny Movie').filter(libitem__checked_out=True).values_list('f_name',flat=True).distinct()
+name_fun = Libuser.objects.filter(libitem__title='Funny Movie').filter(libitem__checked_out=True).values_list('first_name',flat=True).distinct()
 print(name_fun)
 
 print('Get the first name of the person who has checked out the Dvd ‘Funny Movie’:')
-name_fun = Libuser.objects.filter(libitem__in=Dvd.objects.filter(title='Funny Movie').filter(checked_out=True)).values_list('f_name',flat=True)
+name_fun = Libuser.objects.filter(libitem__in=Dvd.objects.filter(title='Funny Movie').filter(checked_out=True)).values_list('first_name',flat=True)
 print(name_fun)
 
 print('List all Books checked out by Libuser with username ‘lisa’:')
-book_lisa = Book.objects.filter(checked_out=True).filter(user__f_name__contains='Lisa')
+book_lisa = Book.objects.filter(checked_out=True).filter(user__username='lisa')
 print(book_lisa)
 
 

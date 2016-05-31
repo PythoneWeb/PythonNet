@@ -1,15 +1,8 @@
+import datetime
 from django.utils import timezone
 from django.db import models
 
-
-# Create your models here.
-class User(models.Model):
-    f_name = models.CharField("First Name", max_length=30)
-    l_name = models.CharField("Last Name", max_length=30)
-    email = models.CharField("Email", max_length=100)
-    CHOICES = (('F', 'Female',), ('M', 'Male',))
-    gender = models.CharField("Gender", max_length=2, choices=CHOICES)
-    postalcode = models.CharField("Postal Code", max_length=7, null=True, blank=True)
+from django.contrib.auth.models import User
 
 class Libuser(User):
     PROVINCE_CHOICES = (
@@ -24,7 +17,7 @@ class Libuser(User):
     phone = models.IntegerField(null=True)
 
     def __str__(self):
-        return self.f_name + ' ' + self.l_name
+        return self.first_name + ' ' + self.last_name
 
 
 class Libitem(models.Model):
@@ -43,8 +36,12 @@ class Libitem(models.Model):
     pubyr = models.IntegerField("Publish Year")
     num_chkout = models.IntegerField(default=0)
 
-    def __str__(self):
-        return self.title + ' used by ' + self.user.__str__()
+    def overdue(self):
+        if self.checked_out == True:
+            if timezone.now().date() < self.duedate:
+                return "Yes"
+            else:
+                return "No"
 
 
 class Book(Libitem):
@@ -57,9 +54,12 @@ class Book(Libitem):
         (6, 'Teen'),
         (7, 'Other'),
     )
-
     author = models.CharField(max_length=100)
     category = models.IntegerField(choices=CATEGORY_CHOICES, default=1)
+
+    def __init__(self, *args, **kwargs):
+        self._meta.get_field('itemtype').default = 'Book'
+        super(Book, self).__init__(*args, **kwargs)
 
     def __str__(self):
         return self.title + ' by ' + self.author
@@ -77,6 +77,10 @@ class Dvd(Libitem):
     maker = models.CharField(max_length=100, blank=True)
     duration = models.IntegerField(blank=True)
     rating = models.IntegerField(choices=RATING_CHOICES, default=1)
+
+    def __init__(self, *args, **kwargs):
+        self._meta.get_field('itemtype').default = 'DVD'
+        super(Dvd, self).__init__(*args, **kwargs)
 
     def __str__(self):
         return self.title + ' by ' + self.maker
